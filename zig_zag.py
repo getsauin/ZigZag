@@ -114,20 +114,19 @@ def remove_continous_max_min(i_df):
     
 def add_2_final_output(stock, i_zigzag_df, today_close):
     total_max_min = len(i_zigzag_df)
+    first_min = i_zigzag_df['Low'][total_max_min - 1]
+    second_min = i_zigzag_df['Low'][total_max_min - 3]
+    first_max = i_zigzag_df['High'][total_max_min - 2]
+    second_max = i_zigzag_df['High'][total_max_min - 4]
+    logger.info("Today Close: %.4f", today_close)
+    logger.info("First Min Date: " + (str(i_zigzag_df.iloc[total_max_min - 1].name).split()[0]) + ", Val: " + str(first_min))
+    logger.info("First Max Date: " + (str(i_zigzag_df.iloc[total_max_min - 2].name).split()[0]) + ", Val: " + str(first_max))
+    logger.info("Second Min Date: " + (str(i_zigzag_df.iloc[total_max_min - 3].name).split()[0]) + ", Val: " + str(second_min))
+    logger.info("Second Max Date: " + (str(i_zigzag_df.iloc[total_max_min - 4].name).split()[0]) + ", Val: " + str(second_max))
+    logger.info("Stop Loss: %.4f", first_min)
     if ((i_zigzag_df['L_max_min'][total_max_min - 1]) == "L_min"):
-        first_min = i_zigzag_df['Low'][total_max_min - 1]
-        second_min = i_zigzag_df['Low'][total_max_min - 3]
-        first_max = i_zigzag_df['High'][total_max_min - 2]
-        second_max = i_zigzag_df['High'][total_max_min - 4]
         if ((first_min < second_min) and (first_max < second_max) and (today_close > first_max)):
             logger.info("**** BUY TRIGGERED FOR **** " + stock)
-            logger.info("Today Close: %.4f", today_close)
-            logger.info("First Min Date: " + (str(i_zigzag_df.iloc[total_max_min - 1].name).split()[0]) + ", Val: " + str(first_min))
-            logger.info("First Max Date: " + (str(i_zigzag_df.iloc[total_max_min - 2].name).split()[0]) + ", Val: " + str(first_max))
-            logger.info("Second Min Date: " + (str(i_zigzag_df.iloc[total_max_min - 3].name).split()[0]) + ", Val: " + str(second_min))
-            logger.info("Second Max Date: " + (str(i_zigzag_df.iloc[total_max_min - 4].name).split()[0]) + ", Val: " + str(second_max))
-            logger.info("Stop Loss: %.4f", first_min)
-            logger.info("***********")
             f_tuple = (stock, 
                               str(i_zigzag_df.iloc[total_max_min - 1].name).split()[0], first_min,
                                 (str(i_zigzag_df.iloc[total_max_min - 2].name).split()[0]), first_max,
