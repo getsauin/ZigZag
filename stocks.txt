@@ -1,2 +1,1 @@
 INFY.NS
-TCS.NS

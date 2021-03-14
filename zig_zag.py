@@ -69,7 +69,7 @@ def generate_trend(i_df):
     i_df['L_max_min'] = i_df['L_max_min_temp'].shift(-4)
     df_t = i_df[i_df.L_max_min != ""].copy()
     df_t = df_t[df_t['L_max_min'].notna()]
-    
+    #print(df_t.to_string())
     res_list = remove_continous_max_min(df_t)
     
     # print (df_t)
@@ -87,6 +87,7 @@ def remove_continous_max_min(i_df):
     while (max_min_idx < total_rows):
         length = 1
         idx_2 = max_min_idx + 1
+        #print ("total_rows:- ", total_rows, " max_min_idx:- ", max_min_idx)
         while (idx_2 < total_rows):
             if (i_df['L_max_min'][max_min_idx] == i_df['L_max_min'][idx_2]):
                 length = length + 1
@@ -94,20 +95,23 @@ def remove_continous_max_min(i_df):
             else:
                 row = i_df.iloc[[max_min_idx]]
                 if (length == 1):
-                    # print ("Idx: ", max_min_idx)
+                    #print ("Idx: ", max_min_idx)
                     data_l.append(i_df.iloc[[max_min_idx]])
                 break
+        if (idx_2 - max_min_idx == 1 and idx_2 >= total_rows):
+            data_l.append(i_df.iloc[[max_min_idx]])
+            #print ("Idx::- ", max_min_idx)
         if (length > 1):
             frm = max_min_idx
             to = max_min_idx + (length - 1)
             if (i_df['L_max_min'][max_min_idx] == "L_min"):
                 min_idx = np.argmin(i_df['Low'][frm:(to + 1)]) + frm
                 data_l.append(i_df.iloc[[min_idx]])
-                # print (i_df['L_max_min'][max_min_idx], " is continous for length =",length," idx - from ", frm, " to ", to, " minIdx=", min_idx)
+                #print (i_df['L_max_min'][max_min_idx], " is continous for length =",length," idx - from ", frm, " to ", to, " minIdx=", min_idx)
             else:
                 max_idx = np.argmax(i_df['High'][frm:(to + 1)]) + frm
                 data_l.append(i_df.iloc[[max_idx]])
-                # print (i_df['L_max_min'][max_min_idx], " is continous for length =",length," idx - from ", frm, " to ", to, " maxIdx=", max_idx)
+                #print (i_df['L_max_min'][max_min_idx], " is continous for length =",length," idx - from ", frm, " to ", to, " maxIdx=", max_idx)
             max_min_idx = max_min_idx + (length - 1)
         max_min_idx = max_min_idx + 1
     return data_l
@@ -137,11 +141,12 @@ def add_2_final_output(stock, i_zigzag_df, today_close):
         stop_loss = first_min
 
 def generate_output():
-    filename = "StockZigZag_Trend_" + time.strftime("%Y%m%d-%H%M%S") + ".csv"
-    with open(filename, mode='w') as csv_file:
-        fwriter = csv.writer(csv_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-        for tup in file_list:
-            fwriter.writerow(tup)
+    if (len(file_list) > 1):
+        filename = "StockZigZag_Trend_" + time.strftime("%Y%m%d-%H%M%S") + ".csv"
+        with open(filename, mode='w') as csv_file:
+            fwriter = csv.writer(csv_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            for tup in file_list:
+                fwriter.writerow(tup)
     
 # Using the special variable
 # __name__
